@@ -10,15 +10,13 @@ class BillModel:
             bills = []
 
             with connection.cursor() as cursor:
-                query = """SELECT id,concession_code,account_fiscal_id,
+                query = """SELECT id,chs_data_dat,account_fiscal_id,
                                ruta_xml_comprobante_recibido,ruta_pdf_generado,
-                               account_razon FROM public.csv_srimvmn
+                               account_razon FROM public.csv_data  
                                WHERE  account_fiscal_id = %s LIMIT 10;"""
                 cursor.execute(query, identificacion)
 
                 resultset = cursor.fetchall()
-                print("resultset", resultset)
-                print(resultset)
                 for row in resultset:
                     bill = Bill(row[0], row[1], row[2], row[3], row[4], row[5])
                     bills.append(bill.to_JSON())
@@ -38,8 +36,8 @@ class BillModel:
 
             with connection.cursor() as cursor:
                 query = """
-                    SELECT *
-                    FROM public.csv_srimvmn
+                    SELECT id, chs_data_dat, account_fiscal_id, ruta_xml_comprobante_recibido, ruta_pdf_generado,account_razon
+                    FROM public.csv_data
                     WHERE (%s IS NULL OR account_fiscal_id = %s)
                     AND (%s IS NULL OR chs_data_dat >= %s)
                     AND (%s IS NULL OR chs_data_dat <= %s)
