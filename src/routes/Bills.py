@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file, abort
+import os
 
 # Models
 from models.BillsModel import BillModel
@@ -43,4 +44,17 @@ def get_bills():
         return jsonify(bills)
     except Exception as ex:
         return jsonify({'message': str(ex)}), 500
+    
+    
+@main.route('/download', methods=['GET'])
+def download_file():
+    file_path = request.args.get('file')
+
+    if file_path and os.path.exists(file_path):
+        try:
+            return send_file(file_path, as_attachment=True)
+        except Exception as e:
+            return str(e), 500
+    else:
+        abort(404, description="File not found")
       
